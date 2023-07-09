@@ -7,6 +7,7 @@ import { PayPalButtons, PayPalScriptProvider } from "@paypal/react-paypal-js"
 import { useElements, useStripe } from "@stripe/react-stripe-js"
 import { useCart } from "medusa-react"
 import React, { useEffect, useState } from "react"
+import { PaystackButton } from "react-paystack"
 
 type PaymentButtonProps = {
   paymentSession?: PaymentSession | null
@@ -47,6 +48,10 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({ paymentSession }) => {
       return (
         <StripePaymentButton session={paymentSession} notReady={notReady} />
       )
+    case "paystack":
+      return (
+        <PayStackPaymentButton session={paymentSession} notReady={notReady} />
+      )
     case "manual":
       return <ManualTestPaymentButton notReady={notReady} />
     case "paypal":
@@ -56,6 +61,38 @@ const PaymentButton: React.FC<PaymentButtonProps> = ({ paymentSession }) => {
     default:
       return <Button disabled>Select a payment method</Button>
   }
+}
+
+const PAYSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || ""
+const PayStackPaymentButton = ({
+  session,
+  notReady,
+}: {
+  session: PaymentSession
+  notReady: boolean
+}) => {
+  const { cart } = useCart()
+  const { onPaymentCompleted } = useCheckout()
+
+  const time = Date.now()
+
+  const txRef = String(session.data?.paystackTxRef)
+  const total = cart?.total || 0
+  const email = cart?.email || ""
+  const currency =
+    cart?.region.currency_code.toUpperCase() === "NGN" ? "NGN" : "NGN" || "NGN"
+
+  return (
+    <PaystackButton
+      email={email}
+      amount={total}
+      reference={txRef}
+      publicKey={PAYSTACK_PUBLIC_KEY}
+      currency="NGN"
+      text="Pay with Paystack"
+      onClose={onPaymentCompleted}
+    />
+  )
 }
 
 const StripePaymentButton = ({
