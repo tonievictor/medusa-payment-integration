@@ -74,8 +74,6 @@ const PayStackPaymentButton = ({
   const { cart } = useCart()
   const { onPaymentCompleted } = useCheckout()
 
-  const time = Date.now()
-
   const txRef = String(session.data?.paystackTxRef)
   const total = cart?.total || 0
   const email = cart?.email || ""
@@ -88,9 +86,9 @@ const PayStackPaymentButton = ({
       amount={total}
       reference={txRef}
       publicKey={PAYSTACK_PUBLIC_KEY}
-      currency="NGN"
+      currency={currency}
       text="Pay with Paystack"
-      onClose={onPaymentCompleted}
+      onSuccess={onPaymentCompleted}
     />
   )
 }

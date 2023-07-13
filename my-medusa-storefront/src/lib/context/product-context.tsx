@@ -1,5 +1,6 @@
 import { canBuy } from "@lib/util/can-buy"
 import { findCheapestPrice } from "@lib/util/prices"
+import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 import isEqual from "lodash/isEqual"
 import { formatVariantPrice, useCart } from "medusa-react"
 import React, {
@@ -11,7 +12,6 @@ import React, {
 } from "react"
 import { Product, Variant } from "types/medusa"
 import { useStore } from "./store-context"
-import { PricedProduct } from "@medusajs/medusa/dist/types/pricing"
 
 interface ProductContext {
   formattedPrice: string
@@ -50,7 +50,7 @@ export const ProductProvider = ({
   useEffect(() => {
     // initialize the option state
     const optionObj: Record<string, string> = {}
-    for (const option of (product.options || [])) {
+    for (const option of product.options || []) {
       Object.assign(optionObj, { [option.id]: undefined })
     }
     setOptions(optionObj)
